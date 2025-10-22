@@ -31,49 +31,49 @@ public class Data {
         Movie m1 = Movie.builder()
                 .id(UUID.randomUUID())
                 .title("Inception")
-                .year(2010)
+                .releaseYear(2010)
                 .rating(8.8)
                 .build();
 
         Movie m2 = Movie.builder()
                 .id(UUID.randomUUID())
                 .title("Interstellar")
-                .year(2014)
+                .releaseYear(2014)
                 .rating(8.9)
                 .build();
 
         Movie m3 = Movie.builder()
                 .id(UUID.randomUUID())
                 .title("The Martian")
-                .year(2015)
+                .releaseYear(2015)
                 .rating(9.0)
                 .build();
 
         Movie m4 = Movie.builder()
                 .id(UUID.randomUUID())
                 .title("The Shawshank Redemption")
-                .year(1994)
+                .releaseYear(1994)
                 .rating(9.3)
                 .build();
 
         Movie m5 = Movie.builder()
                 .id(UUID.randomUUID())
                 .title("Forrest Gump")
-                .year(1994)
+                .releaseYear(1994)
                 .rating(8.8)
                 .build();
 
         Movie m6 = Movie.builder()
                 .id(UUID.randomUUID())
                 .title("Mad Max: Fury Road")
-                .year(2015)
+                .releaseYear(2015)
                 .rating(6.4)
                 .build();
 
         Movie m7 = Movie.builder()
                 .id(UUID.randomUUID())
                 .title("John Wick")
-                .year(2014)
+                .releaseYear(2014)
                 .rating(7.4)
                 .build();
 

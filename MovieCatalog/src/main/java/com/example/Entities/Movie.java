@@ -23,40 +23,40 @@ import lombok.Setter;
 @Entity
 @Table(name = "movies")
 public class Movie implements Comparable<Movie>, Serializable {
+
     private static final long serialVersionUID = 1L;
 
     @Id
     @Column(name = "id", nullable = false, unique = true)
-    private UUID id;  // client-generated UUID
+    private UUID id;
 
     @Column(name = "title", nullable = false)
     private String title;
 
     @Column(name = "release_year")
-    private int year;
+    private int releaseYear;
 
     @Column(name = "rating")
     private double rating;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "genre_id")
     private Genre genre;
 
     @Override
     public int compareTo(Movie other) {
-        // 1. Higher rating first
         int ratingCompare = Double.compare(other.rating, this.rating);
         if (ratingCompare != 0) return ratingCompare;
 
-        // 2. Newer year first
-        int yearCompare = Integer.compare(other.year, this.year);
+        int yearCompare = Integer.compare(other.releaseYear, this.releaseYear);
         if (yearCompare != 0) return yearCompare;
 
-        // 3. Genre alphabetically (case-insensitive)
-        int genreCompare = this.genre.getName().compareToIgnoreCase(other.genre.getName());
+        // Compare genre safely: check null
+        String thisGenreName = genre != null ? genre.getName() : "";
+        String otherGenreName = other.genre != null ? other.genre.getName() : "";
+        int genreCompare = thisGenreName.compareToIgnoreCase(otherGenreName);
         if (genreCompare != 0) return genreCompare;
 
-        // 4. Finally, by title alphabetically
         return this.title.compareToIgnoreCase(other.title);
     }
 
@@ -75,16 +75,9 @@ public class Movie implements Comparable<Movie>, Serializable {
     @Override
     public String toString() {
         return String.format(
-                "Movie{title='%s', year=%d, rating=%.1f, genre='%s'}",
-                title, year, rating, genre != null ? genre.getName() : "None"
+                "Movie{title='%s', year=%d, rating=%.1f}",
+                title, releaseYear, rating
         );
     }
 
-    public void setGenre(Genre genre) {
-        if (genre != null) {
-            this.genre = genre;
-        } else {
-            this.genre = null;
-        }
-    }
 }

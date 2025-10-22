@@ -25,11 +25,12 @@ import lombok.Setter;
 @Entity
 @Table(name = "genres")
 public class Genre implements Comparable<Genre>, Serializable {
+
     private static final long serialVersionUID = 1L;
 
     @Id
     @Column(name = "id", nullable = false, unique = true)
-    private UUID id;  // client-generated UUID
+    private UUID id;
 
     @Column(name = "name", nullable = false, unique = true)
     private String name;
@@ -43,11 +44,10 @@ public class Genre implements Comparable<Genre>, Serializable {
 
     /** Adds a movie to the genre and maintains bidirectional relationship. */
     public void addMovie(Movie movie) {
-        if (movie != null && !movies.contains(movie)) {
-            movies.add(movie);
-            movie.setGenre(this);
-        }
+        movies.add(movie);
+        movie.setGenre(this);
     }
+
 
     @Override
     public int compareTo(Genre other) {
@@ -58,26 +58,19 @@ public class Genre implements Comparable<Genre>, Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Genre genre)) return false;
+        // Only compare basic field, no lazy collection
         return Objects.equals(name, genre.name);
     }
 
     @Override
     public int hashCode() {
+        // Only basic field
         return Objects.hash(name);
     }
 
-
-
-    public List<Movie> getMovies() {
-        return movies;
-    }
-
-
     @Override
     public String toString() {
-        return String.format(
-                "Genre{name='%s', description='%s', movies=%d}",
-                name, description, movies.size()
-        );
+        // Avoid accessing movies.size() outside transaction
+        return String.format("Genre{name='%s', description='%s'}", name, description);
     }
 }
