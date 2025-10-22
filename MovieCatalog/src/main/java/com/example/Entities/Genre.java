@@ -4,6 +4,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import jakarta.persistence.*;
+import java.util.*;
+
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,13 +20,25 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@Table(name = "genres")
 public class Genre implements Comparable<Genre>, Serializable {
     private static final long serialVersionUID = 1L;
 
+    @Id
+    @Column(name = "id", nullable = false, unique = true)
+    private UUID id;  // client-generated UUID
+
+    @Column(name = "name", nullable = false, unique = true)
     private String name;
+
+    @Column(name = "description")
     private String description;
 
     @Builder.Default
+    @OneToMany(mappedBy = "genre", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Movie> movies = new ArrayList<>();
 
     /** Adds a movie to the genre and maintains bidirectional relationship. */

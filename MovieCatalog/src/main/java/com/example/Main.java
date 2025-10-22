@@ -6,6 +6,7 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Collectors;
 import com.example.Entities.*;
 import com.example.dtos.*;
+import com.example.utils.*;
 
 public class Main {
     private static final String FILE = "genres.bin";
@@ -14,7 +15,8 @@ public class Main {
         System.out.println("=== Movies Lab ===");
 
         // Task 2: create data
-        List<Genre> genres = createSampleData();
+        List<Genre> genres =  Data.createSampleData();
+        //List<Genre> genres = readGenresFromFile(FILE);
 
         System.out.println("\n--- Genres and movies ---");
         genres.forEach(g -> {
@@ -78,57 +80,7 @@ public class Main {
         System.out.println("\n=== Done ===");
     }
 
-    private static List<Genre> createSampleData() {
-        Genre sciFi = Genre.builder()
-                .name("Sci-Fi")
-                .description("Futuristic movies")
-                .build();
 
-        Genre drama = Genre.builder()
-                .name("Drama")
-                .description("Dramatic movies")
-                .build();
-
-        Genre action = Genre.builder()
-                .name("Action")
-                .description("Movies with racing/shooting")
-                .build();
-
-// Movies are automatically added to genres
-        // Create movies separately and attach to genres
-        Movie m1 = Movie.builder().title("Inception").year(2010).rating(8.8).build();
-        m1.setGenre(sciFi);
-        sciFi.addMovie(m1);
-
-        Movie m2 = Movie.builder().title("Interstellar").year(2014).rating(8.9).build();
-        m2.setGenre(sciFi);
-        sciFi.addMovie(m2);
-
-        Movie m3 = Movie.builder().title("The Martian").year(2015).rating(9.0).build();
-        m3.setGenre(sciFi);
-        sciFi.addMovie(m3);
-
-        Movie m4 = Movie.builder().title("The Shawshank Redemption").year(1994).rating(9.3).build();
-        m4.setGenre(drama);
-        drama.addMovie(m4);
-
-        Movie m5 = Movie.builder().title("Forrest Gump").year(1994).rating(8.8).build();
-        m5.setGenre(drama);
-        drama.addMovie(m5);
-
-        Movie m6 = Movie.builder().title("Mad Max: Fury Road").year(2015).rating(6.4).build();
-        m6.setGenre(action);
-        action.addMovie(m6);
-
-        Movie m7 = Movie.builder().title("John Wick").year(2014).rating(7.4).build();
-        m7.setGenre(action);
-        action.addMovie(m7);
-
-
-        List<Genre> genres = List.of(sciFi, drama, action);
-        return List.of(sciFi, drama, action);
-
-    }
 
     private static void writeGenresToFile(List<Genre> genres, String filename) {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(filename))) {

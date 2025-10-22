@@ -1,7 +1,10 @@
 package com.example.Entities;
 
+import jakarta.persistence.*;
+import lombok.*;
 import java.io.Serializable;
-import java.util.Objects;
+import java.util.*;
+
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,12 +18,28 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@Table(name = "movies")
 public class Movie implements Comparable<Movie>, Serializable {
     private static final long serialVersionUID = 1L;
 
+    @Id
+    @Column(name = "id", nullable = false, unique = true)
+    private UUID id;  // client-generated UUID
+
+    @Column(name = "title", nullable = false)
     private String title;
+
+    @Column(name = "year")
     private int year;
+
+    @Column(name = "rating")
     private double rating;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "genre_id")
     private Genre genre;
 
     @Override
