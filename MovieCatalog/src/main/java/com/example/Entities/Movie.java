@@ -32,13 +32,13 @@ public class Movie implements Comparable<Movie>, Serializable {
     @Column(name = "title", nullable = false)
     private String title;
 
-    @Column(name = "year")
+    @Column(name = "release_year")
     private int year;
 
     @Column(name = "rating")
     private double rating;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "genre_id")
     private Genre genre;
 
