@@ -82,11 +82,28 @@ public class ConsoleRunner implements CommandLineRunner {
         System.out.print("Enter movie title: ");
         String title = scanner.nextLine();
 
-        System.out.print("Enter release year: ");
-        int year = Integer.parseInt(scanner.nextLine());
+        int year = 0;
+        int currentYear = java.time.Year.now().getValue();
+        while (true) {
+            System.out.print("Enter release year: ");
+            year = Integer.parseInt(scanner.nextLine());
+            if (year > currentYear) {
+                System.out.println("Wrong value: release year cannot be in the future (" + currentYear + " is the current year).");
+            }else{
+                break;
+            }
+        }
 
-        System.out.print("Enter rating: ");
-        double rating = Double.parseDouble(scanner.nextLine());
+        double rating =0;
+        while (true){
+            System.out.print("Enter rating (0–10): ");
+            rating = Double.parseDouble(scanner.nextLine());
+            if (rating < 0 || rating > 10) {
+                System.out.println("Wrong value: rating must be between 0 and 10.");
+            }else{
+                break;
+            }
+        }
 
         listCategories();
         System.out.print("Enter genre name: ");
@@ -105,16 +122,11 @@ public class ConsoleRunner implements CommandLineRunner {
                 .genre(genre)
                 .build();
 
-        if (genre != null) {
-            movie.setGenre(genre);
-            movieService.save(movie);
-
-        } else {
-            movieService.save(movie);
-        }
+        movieService.save(movie);
 
         System.out.println("Movie added successfully!");
     }
+
 
     private void deleteMovie(Scanner scanner) {
         System.out.print("Enter movie title to delete: ");
