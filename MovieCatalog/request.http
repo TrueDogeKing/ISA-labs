@@ -1,0 +1,99 @@
+@baseUrl = http://localhost:8080
+
+// IDs of created resources
+@genreId = ebfaf0de-770d-4a46-b6b7-15ab547f2897
+@movieId = 81437109-da3c-4696-b396-74fc16c13242
+
+############################################
+### 0. GET All Genres (GET)
+### Expected: 200 OK
+############################################
+GET {{baseUrl}}/genres
+
+
+############################################
+### 1. CREATE Genre (POST)
+### Expected: 201 Created
+############################################
+POST {{baseUrl}}/genres
+Content-Type: application/json
+
+{
+  "name": "Action",
+  "description": "High-energy action films"
+}
+
+
+############################################
+### 2. GET All Genres (GET)
+### Expected: 200 OK
+############################################
+GET {{baseUrl}}/genres
+
+
+############################################
+### 3. GET Single Genre by ID (GET /{id})
+### Expected: 200 OK
+############################################
+GET {{baseUrl}}/genres/{{genreId}}
+
+
+############################################
+### 4. CREATE Movie inside Genre (POST)
+### Expected: 201 Created
+### If genre does NOT exist → 404 Not Found
+############################################
+POST {{baseUrl}}/genres/{{genreId}}/movies
+Content-Type: application/json
+
+{
+  "title": "John Wick",
+  "releaseYear": 2005,
+  "rating": 8.7
+}
+
+
+############################################
+### 5. GET All Movies from Genre (GET)
+### Expected: 200 OK
+### If genre exists but empty → []
+### If genre does not exist → 404 Not Found
+############################################
+GET {{baseUrl}}/genres/{{genreId}}/movies
+
+
+############################################
+### 6. UPDATE Movie (PUT /{movieId})
+### Expected: 204 No Content
+### If movie or genre missing → 404 Not Found
+############################################
+PUT {{baseUrl}}/genres/{{genreId}}/movies/{{movieId}}
+Content-Type: application/json
+
+{
+  "title": "John Wick Reloaded",
+  "releaseYear": 2011,
+  "rating": 9.5
+}
+
+
+############################################
+### 7. DELETE Movie (DELETE /{movieId})
+### Expected: 204 No Content
+############################################
+DELETE {{baseUrl}}/genres/{{genreId}}/movies/{{movieId}}
+
+
+############################################
+### 8. DELETE Genre (DELETE /{genreId})
+### Cascade delete all movies
+### Expected: 204 No Content
+############################################
+DELETE {{baseUrl}}/genres/{{genreId}}
+
+
+############################################
+### 9. GET All Genres with Movies
+### Expected: 200 OK
+############################################
+GET {{baseUrl}}/genres/with-movies
