@@ -5,21 +5,26 @@ import com.example.Entities.Genre;
 import com.example.Entities.Movie;
 import com.example.repositories.service.*;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Scanner;
 import java.util.UUID;
 
+
 @Component
 public class ConsoleRunner implements CommandLineRunner {
 
     private final GenreService genreService;
     private final MovieService movieService;
+    private final ConfigurableApplicationContext context;
 
-    public ConsoleRunner(GenreService genreService, MovieService movieService) {
+    public ConsoleRunner(GenreService genreService, MovieService movieService,ConfigurableApplicationContext context) {
         this.genreService = genreService;
         this.movieService = movieService;
+        this.context = context;
     }
 
     @Override
@@ -47,6 +52,7 @@ public class ConsoleRunner implements CommandLineRunner {
                 case "exit" -> {
                     System.out.println("Stopping application...");
                     running = false;
+                    SpringApplication.exit(context, () -> 0); // 0 = exit code
                 }
 
                 default -> System.out.println("Unknown command. Type 'help' to see available commands.");
