@@ -42,4 +42,9 @@ public class MovieService {
     public void deleteById(UUID id) {
         movieRepository.deleteById(id);
     }
+
+    @Transactional
+    public void deleteByGenreId(UUID genreId) {
+        movieRepository.deleteByGenre_Id(genreId);
+    }
 }

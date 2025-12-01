@@ -3,7 +3,9 @@ package com.example.controllers;
 import com.example.dtos.GenreCreateUpdateDTO;
 import com.example.dtos.GenreListItemDTO;
 import com.example.dtos.GenreReadDTO;
+import com.example.dtos.GenreSyncDTO;
 import com.example.entities.Genre;
+import com.example.integration.MovieEventPublisher;
 import com.example.services.GenreService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,9 +20,11 @@ import java.util.UUID;
 public class GenreController {
 
     private final GenreService genreService;
+    private final MovieEventPublisher movieEventPublisher;
 
-    public GenreController(GenreService genreService) {
+    public GenreController(GenreService genreService, MovieEventPublisher movieEventPublisher) {
         this.genreService = genreService;
+        this.movieEventPublisher = movieEventPublisher;
     }
 
     @GetMapping
@@ -52,6 +56,10 @@ public class GenreController {
 
         newGenre = genreService.save(newGenre);
 
+        movieEventPublisher.publishGenreCreated(
+            new GenreSyncDTO(newGenre.getId(), newGenre.getName(), newGenre.getDescription())
+        );
+
         return ResponseEntity.created(
                 uriBuilder.path("/genres/{id}")
                         .buildAndExpand(newGenre.getId())
@@ -74,7 +82,12 @@ public class GenreController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteGenre(@PathVariable UUID id) {
-        genreService.deleteById(id);
-        return ResponseEntity.noContent().build();
+        return genreService.findById(id)
+                .map(genre -> {
+                    genreService.deleteById(id);
+                    movieEventPublisher.publishGenreDeleted(id);
+                    return ResponseEntity.<Void>noContent().build();
+                })
+                .orElse(ResponseEntity.notFound().build());
     }
 }

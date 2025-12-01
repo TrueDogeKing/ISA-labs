@@ -10,4 +10,5 @@ import java.util.UUID;
 @Repository
 public interface MovieRepository extends JpaRepository<Movie, UUID> {
     List<Movie> findByGenre_Id(UUID genreId);
+    void deleteByGenre_Id(UUID genreId);
 }
