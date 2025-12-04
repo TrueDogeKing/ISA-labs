@@ -27,6 +27,7 @@ public class MovieEventPublisher {
     public void publishGenreCreated(GenreSyncDTO dto) {
         try {
             restTemplate.postForEntity(movieServiceBaseUrl + "/internal/categories", dto, Void.class);
+            LOGGER.info("Published genre creation event for {}", dto.id());
         } catch (RestClientException ex) {
             LOGGER.warn("Failed to notify movie service about genre creation (id={}): {}", dto.id(), ex.getMessage());
         }
@@ -35,6 +36,7 @@ public class MovieEventPublisher {
     public void publishGenreDeleted(UUID genreId) {
         try {
             restTemplate.delete(movieServiceBaseUrl + "/internal/categories/{id}", genreId);
+            LOGGER.info("Published genre deletion event for {}", genreId);
         } catch (RestClientException ex) {
             LOGGER.warn("Failed to notify movie service about genre deletion (id={}): {}", genreId, ex.getMessage());
         }

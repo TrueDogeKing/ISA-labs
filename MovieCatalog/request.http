@@ -1,9 +1,14 @@
-@baseUrl = http://localhost:8080
+@baseUrl = http://localhost:8090
 
-// IDs of created resources
-@genreId = ebfaf0de-770d-4a46-b6b7-15ab547f2897
-@movieId = 81437109-da3c-4696-b396-74fc16c13242
+@genreId =c7b7ac4d-099e-48f9-979c-de0be9162c04
+@movieId =f28b97ff-44c7-465e-9d68-09bd3d17964c
 
+
+POST  http://localhost:8080/admin/sample-data
+####
+POST  http://localhost:8081/admin/sample-data
+###
+GET http://localhost:8090/actuator/gateway/routes
 ############################################
 ### 0. GET All Genres (GET)
 ### Expected: 200 OK
@@ -19,8 +24,8 @@ POST {{baseUrl}}/genres
 Content-Type: application/json
 
 {
-  "name": "Action",
-  "description": "High-energy action films"
+  "name": "mystery",
+  "description": "Whodunit thrillers"
 }
 
 
@@ -47,9 +52,9 @@ POST {{baseUrl}}/genres/{{genreId}}/movies
 Content-Type: application/json
 
 {
-  "title": "John Wick",
+  "title": "New Movie",
   "releaseYear": 2005,
-  "rating": 8.7
+  "rating": 9.1
 }
 
 
@@ -71,9 +76,9 @@ PUT {{baseUrl}}/genres/{{genreId}}/movies/{{movieId}}
 Content-Type: application/json
 
 {
-  "title": "John Wick Reloaded",
+  "title": "New Movie Reloaded",
   "releaseYear": 2011,
-  "rating": 9.5
+  "rating": 9.2
 }
 
 

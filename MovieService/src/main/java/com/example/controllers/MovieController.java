@@ -7,6 +7,7 @@ import com.example.entities.Genre;
 import com.example.entities.Movie;
 import com.example.services.GenreService;
 import com.example.services.MovieService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -46,8 +47,8 @@ public class MovieController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> addMovie(@PathVariable UUID genreId,
-                                         @RequestBody MovieCreateUpdateDTO dto,
+        public ResponseEntity<Void> addMovie(@PathVariable UUID genreId,
+                                                                                 @RequestBody @Valid MovieCreateUpdateDTO dto,
                                          UriComponentsBuilder uriBuilder) {
 
         return genreService.findById(genreId)
@@ -90,34 +91,44 @@ public class MovieController {
     }
 
     @PutMapping("/{movieId}")
-    public ResponseEntity<Void> updateMovie(@PathVariable UUID genreId,
-                                            @PathVariable UUID movieId,
-                                            @RequestBody MovieCreateUpdateDTO dto) {
+        public ResponseEntity<Void> updateMovie(@PathVariable UUID genreId,
+                                                                                        @PathVariable UUID movieId,
+                                                                                        @RequestBody @Valid MovieCreateUpdateDTO dto) {
 
-        return movieService.findById(movieId)
-                .filter(movie -> movie.getGenre() != null &&
-                        movie.getGenre().getId().equals(genreId))
-                .map(movie -> {
-                    movie.setTitle(dto.title());
-                    movie.setReleaseYear(dto.releaseYear());
-                    movie.setRating(dto.rating());
-                    movieService.save(movie);
-                    return ResponseEntity.<Void>ok().build();
-                })
-                .orElse(ResponseEntity.notFound().build());
+                var movieOptional = movieService.findById(movieId);
+                if (movieOptional.isEmpty()) {
+                        return ResponseEntity.notFound().build();
+                }
+
+                Movie movie = movieOptional.get();
+                Genre genre = movie.getGenre();
+                if (genre == null || !genre.getId().equals(genreId)) {
+                        return ResponseEntity.notFound().build();
+                }
+
+                movie.setTitle(dto.title());
+                movie.setReleaseYear(dto.releaseYear());
+                movie.setRating(dto.rating());
+                movieService.save(movie);
+                return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{movieId}")
     public ResponseEntity<Void> deleteMovie(@PathVariable UUID genreId,
                                             @PathVariable UUID movieId) {
 
-        return movieService.findById(movieId)
-                .filter(movie -> movie.getGenre() != null &&
-                        movie.getGenre().getId().equals(genreId))
-                .map(movie -> {
-                    movieService.deleteById(movieId);
-                    return ResponseEntity.<Void>noContent().build();
-                })
-                .orElse(ResponseEntity.notFound().build());
+                var movieOptional = movieService.findById(movieId);
+                if (movieOptional.isEmpty()) {
+                        return ResponseEntity.notFound().build();
+                }
+
+                Movie movie = movieOptional.get();
+                Genre genre = movie.getGenre();
+                if (genre == null || !genre.getId().equals(genreId)) {
+                        return ResponseEntity.notFound().build();
+                }
+
+                movieService.deleteById(movieId);
+                return ResponseEntity.noContent().build();
     }
 }

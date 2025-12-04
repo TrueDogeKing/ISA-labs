@@ -7,6 +7,7 @@ import com.example.dtos.GenreSyncDTO;
 import com.example.entities.Genre;
 import com.example.integration.MovieEventPublisher;
 import com.example.services.GenreService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -18,6 +19,9 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/genres")
 public class GenreController {
+
+    private static final ResponseEntity<Void> NOT_FOUND = new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
+    private static final ResponseEntity<Void> CONFLICT = new ResponseEntity<Void>(HttpStatus.CONFLICT);
 
     private final GenreService genreService;
     private final MovieEventPublisher movieEventPublisher;
@@ -48,6 +52,11 @@ public class GenreController {
     @PostMapping
     public ResponseEntity<Void> createGenre(@RequestBody GenreCreateUpdateDTO dto,
                                             UriComponentsBuilder uriBuilder) {
+        Genre existing = genreService.findByName(dto.name());
+        if (existing != null) {
+            return CONFLICT;
+        }
+
         Genre newGenre = Genre.builder()
                 .id(UUID.randomUUID())
                 .name(dto.name())
@@ -70,24 +79,27 @@ public class GenreController {
     @PutMapping("/{id}")
     public ResponseEntity<Void> updateGenre(@PathVariable UUID id,
                                             @RequestBody GenreCreateUpdateDTO dto) {
-        return genreService.findById(id)
-                .map(genre -> {
-                    genre.setName(dto.name());
-                    genre.setDescription(dto.description());
-                    genreService.save(genre);
-                    return ResponseEntity.<Void>ok().build();
-                })
-                .orElse(ResponseEntity.notFound().build());
+        var existingGenre = genreService.findById(id);
+        if (existingGenre.isEmpty()) {
+            return NOT_FOUND;
+        }
+
+        Genre genre = existingGenre.get();
+        genre.setName(dto.name());
+        genre.setDescription(dto.description());
+        genreService.save(genre);
+
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteGenre(@PathVariable UUID id) {
-        return genreService.findById(id)
-                .map(genre -> {
-                    genreService.deleteById(id);
-                    movieEventPublisher.publishGenreDeleted(id);
-                    return ResponseEntity.<Void>noContent().build();
-                })
-                .orElse(ResponseEntity.notFound().build());
+        if (genreService.findById(id).isEmpty()) {
+            return NOT_FOUND;
+        }
+
+        genreService.deleteById(id);
+        movieEventPublisher.publishGenreDeleted(id);
+        return ResponseEntity.noContent().build();
     }
 }
