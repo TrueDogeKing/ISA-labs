@@ -1,0 +1,99 @@
+<div class="container">
+  <header>
+    <h1>Category Management</h1>
+    <p>List of all categories with delete and sample data generation options</p>
+  </header>
+
+  <div class="main">
+    <!-- Messages -->
+    <div *ngIf="error()" class="message error">{{ error() }}</div>
+    <div *ngIf="message()" class="message success">{{ message() }}</div>
+
+    <!-- Loading -->
+    <div *ngIf="loading()" class="loading">Loading...</div>
+
+    <!-- LIST VIEW -->
+    <div *ngIf="view() === 'list' && !loading()">
+      <!-- Controls -->
+      <div class="controls">
+        <button (click)="loadCategories()" [disabled]="loading()">Refresh</button>
+        <button (click)="createSampleData()" [disabled]="loading()" class="primary">
+          Create Sample Data
+        </button>
+        <button (click)="showForm()" [disabled]="loading()" class="success">
+          Add New Category
+        </button>
+      </div>
+
+      <!-- Categories List -->
+      <div class="list">
+        <div class="list-info">
+          <h2>Categories ({{ categories().length }})</h2>
+        </div>
+
+        <table *ngIf="categories().length > 0" class="table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let cat of categories()">
+              <td>{{ cat.name }}</td>
+              <td>
+                <button (click)="deleteCategory(cat.id, cat.name)" class="delete">
+                  Delete
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div *ngIf="categories().length === 0" class="empty">
+          No categories found. Create sample data to get started.
+        </div>
+      </div>
+    </div>
+
+    <!-- FORM VIEW -->
+    <div *ngIf="view() === 'form'" class="form-section">
+      <h2>Add New Category</h2>
+      <form (ngSubmit)="saveCategory()" class="form">
+        <div class="form-group">
+          <label for="categoryName">Category Name:</label>
+          <input
+            type="text"
+            id="categoryName"
+            [(ngModel)]="formData().name"
+            name="name"
+            placeholder="Enter category name"
+            [disabled]="loading()"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="categoryDescription">Description (optional):</label>
+          <textarea
+            id="categoryDescription"
+            [(ngModel)]="formData().description"
+            name="description"
+            placeholder="Enter category description"
+            [disabled]="loading()"
+            rows="4"
+          ></textarea>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" [disabled]="loading()" class="success">
+            Save Category
+          </button>
+          <button type="button" (click)="cancelForm()" [disabled]="loading()" class="secondary">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
