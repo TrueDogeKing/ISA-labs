@@ -29,15 +29,24 @@ export class CategoriesComponent implements OnInit {
   error = signal<string | null>(null);
   message = signal<string | null>(null);
   
-  view = signal<'list' | 'create' | 'edit' | 'details'>('list');
+  view = signal<'list' | 'create' | 'edit' | 'details' | 'element-create' | 'element-edit' | 'element-details'>('list');
   formData = signal({ name: '', description: '' });
+  elementFormData = signal({ title: '', releaseYear: new Date().getFullYear(), rating: 0 });
   
-  // For edit view
+  // For category edit view
   editingId = signal<string | null>(null);
   
   // For details view
   selectedCategory = signal<Category | null>(null);
   elements = signal<Movie[]>([]);
+  
+  // For element views
+  selectedElement = signal<Movie | null>(null);
+  editingElementId = signal<string | null>(null);
+  
+  // Date helpers for forms
+  currentYear = new Date().getFullYear();
+  maxYear = new Date().getFullYear() + 5;
 
   constructor(private http: HttpClient) {}
 
@@ -257,5 +266,98 @@ export class CategoriesComponent implements OnInit {
     this.view.set('list');
     this.selectedCategory.set(null);
     this.elements.set([]);
+  }
+
+  // Element management methods
+  showCreateElementForm() {
+    this.view.set('element-create');
+    this.elementFormData.set({ title: '', releaseYear: new Date().getFullYear(), rating: 0 });
+    this.error.set(null);
+    this.message.set(null);
+  }
+
+  showEditElementForm(element: Movie) {
+    this.view.set('element-edit');
+    this.editingElementId.set(element.id);
+    this.elementFormData.set({
+      title: element.title,
+      releaseYear: element.releaseYear || new Date().getFullYear(),
+      rating: element.rating || 0
+    });
+    this.error.set(null);
+    this.message.set(null);
+  }
+
+  showElementDetails(element: Movie) {
+    this.selectedElement.set(element);
+    this.view.set('element-details');
+    this.error.set(null);
+    this.message.set(null);
+  }
+
+  cancelElementForm() {
+    this.view.set('details');
+    this.elementFormData.set({ title: '', releaseYear: new Date().getFullYear(), rating: 0 });
+    this.editingElementId.set(null);
+  }
+
+  backToDetails() {
+    this.view.set('details');
+    this.selectedElement.set(null);
+  }
+
+  saveElement() {
+    const title = this.elementFormData().title.trim();
+    
+    if (!title) {
+      this.error.set('Element title cannot be empty');
+      return;
+    }
+
+    const categoryId = this.selectedCategory()?.id;
+    if (!categoryId) return;
+
+    this.loading.set(true);
+    this.error.set(null);
+    this.message.set(null);
+
+    const elementData = {
+      title,
+      releaseYear: this.elementFormData().releaseYear || new Date().getFullYear(),
+      rating: this.elementFormData().rating || 0
+    };
+
+    if (this.view() === 'element-create') {
+      this.http.post<Movie>(`http://localhost:8081/genres/${categoryId}/movies`, elementData).subscribe({
+        next: () => {
+          this.message.set('Element added successfully');
+          this.error.set(null);
+          this.elementFormData.set({ title: '', releaseYear: new Date().getFullYear(), rating: 0 });
+          this.view.set('details');
+          this.loading.set(false);
+          this.loadCategoryElements(categoryId);
+        },
+        error: (err) => {
+          this.error.set('Failed to add element: ' + (err.error?.message || err.message));
+          this.loading.set(false);
+        }
+      });
+    } else if (this.view() === 'element-edit' && this.editingElementId()) {
+      this.http.put(`http://localhost:8081/genres/${categoryId}/movies/${this.editingElementId()}`, elementData).subscribe({
+        next: () => {
+          this.message.set('Element updated successfully');
+          this.error.set(null);
+          this.elementFormData.set({ title: '', releaseYear: new Date().getFullYear(), rating: 0 });
+          this.editingElementId.set(null);
+          this.view.set('details');
+          this.loading.set(false);
+          this.loadCategoryElements(categoryId);
+        },
+        error: (err) => {
+          this.error.set('Failed to update element: ' + (err.error?.message || err.message));
+          this.loading.set(false);
+        }
+      });
+    }
   }
 }

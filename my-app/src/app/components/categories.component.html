@@ -156,7 +156,12 @@
       </div>
 
       <div class="elements-section" *ngIf="!loading()">
-        <h3>Elements ({{ elements().length }})</h3>
+        <div class="section-header">
+          <h3>Elements ({{ elements().length }})</h3>
+          <button (click)="showCreateElementForm()" class="success" style="margin-left: auto;">
+            Add Element
+          </button>
+        </div>
 
         <table *ngIf="elements().length > 0" class="table">
           <thead>
@@ -164,7 +169,7 @@
               <th>Title</th>
               <th>Release Year</th>
               <th>Rating</th>
-              <th>Action</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -172,10 +177,10 @@
               <td>{{ element.title }}</td>
               <td>{{ element.releaseYear || 'N/A' }}</td>
               <td>{{ element.rating || 'N/A' }}</td>
-              <td>
-                <button (click)="deleteElement(element.id, element.title)" class="delete">
-                  Remove
-                </button>
+              <td class="actions">
+                <button (click)="showElementDetails(element)" class="view">View</button>
+                <button (click)="showEditElementForm(element)" class="edit">Edit</button>
+                <button (click)="deleteElement(element.id, element.title)" class="delete">Remove</button>
               </td>
             </tr>
           </tbody>
@@ -183,6 +188,150 @@
 
         <div *ngIf="elements().length === 0" class="empty">
           No elements found in this category.
+        </div>
+      </div>
+    </div>
+
+    <!-- ELEMENT CREATE FORM VIEW -->
+    <div *ngIf="view() === 'element-create'" class="form-section">
+      <h2>Add New Element to {{ selectedCategory()?.name }}</h2>
+      <form (ngSubmit)="saveElement()" class="form">
+        <div class="form-group">
+          <label for="elementTitle">Title:</label>
+          <input
+            type="text"
+            id="elementTitle"
+            [(ngModel)]="elementFormData().title"
+            name="title"
+            placeholder="Enter element title"
+            [disabled]="loading()"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="elementYear">Release Year:</label>
+          <input
+            type="number"
+            id="elementYear"
+            [(ngModel)]="elementFormData().releaseYear"
+            name="releaseYear"
+            placeholder="Enter release year"
+            [disabled]="loading()"
+            min="1900"
+            [max]="maxYear"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="elementRating">Rating:</label>
+          <input
+            type="number"
+            id="elementRating"
+            [(ngModel)]="elementFormData().rating"
+            name="rating"
+            placeholder="Enter rating (0-10)"
+            [disabled]="loading()"
+            min="0"
+            max="10"
+            step="0.1"
+          />
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" [disabled]="loading()" class="success">
+            Add Element
+          </button>
+          <button type="button" (click)="cancelElementForm()" [disabled]="loading()" class="secondary">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- ELEMENT EDIT FORM VIEW -->
+    <div *ngIf="view() === 'element-edit'" class="form-section">
+      <h2>Edit Element in {{ selectedCategory()?.name }}</h2>
+      <form (ngSubmit)="saveElement()" class="form">
+        <div class="form-group">
+          <label for="editElementTitle">Title:</label>
+          <input
+            type="text"
+            id="editElementTitle"
+            [(ngModel)]="elementFormData().title"
+            name="title"
+            placeholder="Enter element title"
+            [disabled]="loading()"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="editElementYear">Release Year:</label>
+          <input
+            type="number"
+            id="editElementYear"
+            [(ngModel)]="elementFormData().releaseYear"
+            name="releaseYear"
+            placeholder="Enter release year"
+            [disabled]="loading()"
+            min="1900"
+            [max]="maxYear"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="editElementRating">Rating:</label>
+          <input
+            type="number"
+            id="editElementRating"
+            [(ngModel)]="elementFormData().rating"
+            name="rating"
+            placeholder="Enter rating (0-10)"
+            [disabled]="loading()"
+            min="0"
+            max="10"
+            step="0.1"
+          />
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" [disabled]="loading()" class="success">
+            Update Element
+          </button>
+          <button type="button" (click)="cancelElementForm()" [disabled]="loading()" class="secondary">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- ELEMENT DETAILS VIEW -->
+    <div *ngIf="view() === 'element-details'" class="details-section">
+      <div class="details-header">
+        <button (click)="backToDetails()" class="back-button">← Back to Elements</button>
+      </div>
+
+      <div class="element-info" *ngIf="selectedElement()">
+        <h2>{{ selectedElement()!.title }}</h2>
+        <div class="info-grid">
+          <div class="info-item">
+            <label>Release Year:</label>
+            <span>{{ selectedElement()!.releaseYear || 'N/A' }}</span>
+          </div>
+          <div class="info-item">
+            <label>Rating:</label>
+            <span>{{ selectedElement()!.rating || 'N/A' }}/10</span>
+          </div>
+          <div class="info-item">
+            <label>Category:</label>
+            <span>{{ selectedCategory()?.name }}</span>
+          </div>
+        </div>
+
+        <div class="element-actions">
+          <button (click)="showEditElementForm(selectedElement()!)" class="edit">Edit Element</button>
+          <button (click)="deleteElement(selectedElement()!.id, selectedElement()!.title)" class="delete">Delete Element</button>
         </div>
       </div>
     </div>
