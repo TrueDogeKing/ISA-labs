@@ -35,13 +35,19 @@
           <thead>
             <tr>
               <th>Name</th>
-              <th>Action</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let cat of categories()">
               <td>{{ cat.name }}</td>
-              <td>
+              <td class="actions">
+                <button (click)="showDetails(cat)" class="view">
+                  View
+                </button>
+                <button (click)="showEditForm(cat)" class="edit">
+                  Edit
+                </button>
                 <button (click)="deleteCategory(cat.id, cat.name)" class="delete">
                   Delete
                 </button>
@@ -56,8 +62,8 @@
       </div>
     </div>
 
-    <!-- FORM VIEW -->
-    <div *ngIf="view() === 'form'" class="form-section">
+    <!-- CREATE FORM VIEW -->
+    <div *ngIf="view() === 'create'" class="form-section">
       <h2>Add New Category</h2>
       <form (ngSubmit)="saveCategory()" class="form">
         <div class="form-group">
@@ -94,6 +100,91 @@
           </button>
         </div>
       </form>
+    </div>
+
+    <!-- EDIT FORM VIEW -->
+    <div *ngIf="view() === 'edit'" class="form-section">
+      <h2>Edit Category</h2>
+      <form (ngSubmit)="saveCategory()" class="form">
+        <div class="form-group">
+          <label for="editCategoryName">Category Name:</label>
+          <input
+            type="text"
+            id="editCategoryName"
+            [(ngModel)]="formData().name"
+            name="name"
+            placeholder="Enter category name"
+            [disabled]="loading()"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="editCategoryDescription">Description (optional):</label>
+          <textarea
+            id="editCategoryDescription"
+            [(ngModel)]="formData().description"
+            name="description"
+            placeholder="Enter category description"
+            [disabled]="loading()"
+            rows="4"
+          ></textarea>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" [disabled]="loading()" class="success">
+            Update Category
+          </button>
+          <button type="button" (click)="cancelForm()" [disabled]="loading()" class="secondary">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- DETAILS VIEW -->
+    <div *ngIf="view() === 'details'" class="details-section">
+      <div class="details-header">
+        <button (click)="backToList()" class="back-button">← Back to Categories</button>
+      </div>
+
+      <div class="category-info" *ngIf="selectedCategory()">
+        <h2>{{ selectedCategory()!.name }}</h2>
+        <p *ngIf="selectedCategory()!.description" class="description">
+          {{ selectedCategory()!.description }}
+        </p>
+      </div>
+
+      <div class="elements-section" *ngIf="!loading()">
+        <h3>Elements ({{ elements().length }})</h3>
+
+        <table *ngIf="elements().length > 0" class="table">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Release Year</th>
+              <th>Rating</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let element of elements()">
+              <td>{{ element.title }}</td>
+              <td>{{ element.releaseYear || 'N/A' }}</td>
+              <td>{{ element.rating || 'N/A' }}</td>
+              <td>
+                <button (click)="deleteElement(element.id, element.title)" class="delete">
+                  Remove
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div *ngIf="elements().length === 0" class="empty">
+          No elements found in this category.
+        </div>
+      </div>
     </div>
   </div>
 </div>

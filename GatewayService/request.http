@@ -3,7 +3,6 @@
 @genreId =c7b7ac4d-099e-48f9-979c-de0be9162c04
 @movieId =f28b97ff-44c7-465e-9d68-09bd3d17964c
 
-####
 
 POST  http://localhost:8080/admin/sample-data
 ####
