@@ -58,7 +58,7 @@ export class CategoriesComponent implements OnInit {
     this.loading.set(true);
     this.error.set(null);
     
-    this.http.get<Category[]>('http://localhost:8080/genres').subscribe({
+    this.http.get<Category[]>('/api/genres').subscribe({
       next: (data) => {
         this.categories.set(data);
         this.loading.set(false);
@@ -79,7 +79,7 @@ export class CategoriesComponent implements OnInit {
     this.error.set(null);
     this.message.set(null);
 
-    this.http.delete(`http://localhost:8080/genres/${categoryId}`).subscribe({
+    this.http.delete(`/api/genres/${categoryId}`).subscribe({
       next: () => {
         this.categories.update(cats => cats.filter(c => c.id !== categoryId));
         this.message.set(`Deleted: "${categoryName}"`);
@@ -98,10 +98,9 @@ export class CategoriesComponent implements OnInit {
     this.error.set(null);
     this.message.set(null);
 
-    // POST to both services
+    // POST to both services via proxy
     Promise.all([
-      this.http.post('http://localhost:8080/admin/sample-data', {}).toPromise(),
-      this.http.post('http://localhost:8081/admin/sample-data', {}).toPromise()
+      this.http.post('/api/admin/sample-data', {}).toPromise()
     ]).then(() => {
       this.message.set('Sample data created successfully!');
       this.loading.set(false);
@@ -127,7 +126,7 @@ export class CategoriesComponent implements OnInit {
     this.error.set(null);
     
     // Fetch full category details including description
-    this.http.get<Category>(`http://localhost:8080/genres/${category.id}`).subscribe({
+    this.http.get<Category>(`/api/genres/${category.id}`).subscribe({
       next: (fullCategory) => {
         this.formData.set({ 
           name: fullCategory.name, 
@@ -142,6 +141,8 @@ export class CategoriesComponent implements OnInit {
       }
     });
   }
+  
+  
 
   cancelForm() {
     this.view.set('list');
@@ -167,7 +168,7 @@ export class CategoriesComponent implements OnInit {
     };
 
     if (this.view() === 'create') {
-      this.http.post<Category>('http://localhost:8080/genres', categoryData).subscribe({
+      this.http.post<Category>('/api/genres', categoryData).subscribe({
         next: () => {
           this.message.set('Category created successfully');
           this.formData.set({ name: '', description: '' });
@@ -181,7 +182,7 @@ export class CategoriesComponent implements OnInit {
         }
       });
     } else if (this.view() === 'edit' && this.editingId()) {
-      this.http.put(`http://localhost:8080/genres/${this.editingId()}`, categoryData).subscribe({
+      this.http.put(`/api/genres/${this.editingId()}`, categoryData).subscribe({
         next: () => {
           this.message.set('Category updated successfully');
           this.formData.set({ name: '', description: '' });
@@ -206,7 +207,7 @@ export class CategoriesComponent implements OnInit {
     this.loading.set(true);
     
     // Fetch full category details including description
-    this.http.get<Category>(`http://localhost:8080/genres/${category.id}`).subscribe({
+    this.http.get<Category>(`/api/genres/${category.id}`).subscribe({
       next: (fullCategory) => {
         this.selectedCategory.set(fullCategory);
         this.loading.set(false);
@@ -224,7 +225,7 @@ export class CategoriesComponent implements OnInit {
     this.loading.set(true);
     this.error.set(null);
 
-    this.http.get<Movie[]>(`http://localhost:8081/genres/${categoryId}/movies`).subscribe({
+    this.http.get<Movie[]>(`/api/genres/${categoryId}/movies`).subscribe({
       next: (data) => {
         this.elements.set(data);
         this.loading.set(false);
@@ -248,7 +249,7 @@ export class CategoriesComponent implements OnInit {
     this.error.set(null);
     this.message.set(null);
 
-    this.http.delete(`http://localhost:8081/genres/${categoryId}/movies/${elementId}`).subscribe({
+    this.http.delete(`/api/genres/${categoryId}/movies/${elementId}`).subscribe({
       next: () => {
         this.message.set(`Removed: "${elementTitle}"`);
         this.loading.set(false);
@@ -328,7 +329,7 @@ export class CategoriesComponent implements OnInit {
     };
 
     if (this.view() === 'element-create') {
-      this.http.post<Movie>(`http://localhost:8081/genres/${categoryId}/movies`, elementData).subscribe({
+      this.http.post<Movie>(`/api/genres/${categoryId}/movies`, elementData).subscribe({
         next: () => {
           this.message.set('Element added successfully');
           this.error.set(null);
@@ -343,7 +344,7 @@ export class CategoriesComponent implements OnInit {
         }
       });
     } else if (this.view() === 'element-edit' && this.editingElementId()) {
-      this.http.put(`http://localhost:8081/genres/${categoryId}/movies/${this.editingElementId()}`, elementData).subscribe({
+      this.http.put(`/api/genres/${categoryId}/movies/${this.editingElementId()}`, elementData).subscribe({
         next: () => {
           this.message.set('Element updated successfully');
           this.error.set(null);

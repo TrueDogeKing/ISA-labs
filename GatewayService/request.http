@@ -1,14 +1,12 @@
 @baseUrl = http://localhost:8090
 
-@genreId =c7b7ac4d-099e-48f9-979c-de0be9162c04
+@genreId =0b3251c1-09fc-4e24-a8e7-2b0538cd9e21
 @movieId =f28b97ff-44c7-465e-9d68-09bd3d17964c
 
 
 POST  http://localhost:8080/admin/sample-data
 ####
 POST  http://localhost:8081/admin/sample-data
-###
-GET http://localhost:8090/actuator/gateway/routes
 ############################################
 ### 0. GET All Genres (GET)
 ### Expected: 200 OK
