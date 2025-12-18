@@ -1,7 +1,6 @@
 <div class="container">
   <header>
-    <h1>Category Management</h1>
-    <p>List of all categories with delete and sample data generation options</p>
+    <h1>Movie Catalog</h1>
   </header>
 
   <div class="main">
@@ -17,9 +16,6 @@
       <!-- Controls -->
       <div class="controls">
         <button (click)="loadCategories()" [disabled]="loading()">Refresh</button>
-        <button (click)="createSampleData()" [disabled]="loading()" class="primary">
-          Create Sample Data
-        </button>
         <button (click)="showForm()" [disabled]="loading()" class="success">
           Add New Category
         </button>

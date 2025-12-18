@@ -93,25 +93,6 @@ export class CategoriesComponent implements OnInit {
     });
   }
 
-  createSampleData() {
-    this.loading.set(true);
-    this.error.set(null);
-    this.message.set(null);
-
-    // POST to both services via proxy
-    Promise.all([
-      this.http.post('/api/admin/sample-data', {}).toPromise()
-    ]).then(() => {
-      this.message.set('Sample data created successfully!');
-      this.loading.set(false);
-      setTimeout(() => this.loadCategories(), 500);
-    }).catch((err) => {
-      this.error.set('Failed to create sample data');
-      this.loading.set(false);
-      console.error('Error creating sample data:', err);
-    });
-  }
-
   showForm() {
     this.view.set('create');
     this.formData.set({ name: '', description: '' });
