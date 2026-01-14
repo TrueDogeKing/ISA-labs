@@ -38,6 +38,13 @@
       <scope>runtime</scope>
     </dependency>
 
+    <!-- PostgreSQL driver for production profile -->
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <version>42.7.3</version>
+    </dependency>
+
     <!-- Lombok (for @Builder, @Getter, etc.) -->
     <dependency>
       <groupId>org.projectlombok</groupId>
